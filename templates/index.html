@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask CRUD Example</title>
+</head>
+<body>
+    <h1>Items</h1>
+    <ul>
+        {% for item in items %}
+            <li>{{ item.name }} <a href="{{ url_for('delete_item', item_id=item.id) }}">Delete</a></li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Add New Item</h2>
+    <form action="/add" method="post">
+        <label for="name">Item Name:</label>
+        <input type="text" id="name" name="name" required>
+        <button type="submit">Add Item</button>
+    </form>
+</body>
+</html>
