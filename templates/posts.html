@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts</title>
+</head>
+<body>
+    <h1>Posts</h1>
+    <ul id="post-list"></ul>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Fetch and display posts using Ajax
+            $.get('/api/posts', function(posts) {
+                posts.forEach(function(post) {
+                    $('#post-list').append('<li>' + post.title + ' by ' + post.user_id + '</li>');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

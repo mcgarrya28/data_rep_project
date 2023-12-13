@@ -1,41 +1,50 @@
-from flask import Flask, render_template, request, redirect, url_for
-from flask_restful import Api, Resource
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-api = Api(app)
-
-# Configure the SQLite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 db = SQLAlchemy(app)
 
-# Define a simple model
-class Item(db.Model):
+# Define models
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    username = db.Column(db.String(50), unique=True, nullable=False)
 
-# Define the RESTful API resource
-class ItemResource(Resource):
-    def get(self, item_id):
-        item = Item.query.get(item_id)
-        if item:
-            return {'id': item.id, 'name': item.name}
-        return {'message': 'Item not found'}, 404
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def put(self, item_id):
-        data = request.get_json()
-        item = Item.query.get(item_id)
-        if item:
-            item.name = data['name']
-            db.session.commit()
-            return {'message': 'Item updated successfully'}
-        return {'message': 'Item not found'}, 404
+# Create tables
+with app.app_context():
+    db.create_all()
 
-    def delete(self, item_id):
-        item = Item.query.get(item_id)
-        if item:
-            db.session.delete(item)
-            db.session.commit()
-            return {'message': 'Item deleted successfully'}
-        return {'message': 'Item not found'}, 404
+# RESTful API routes
+@app.route('/api/users', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    user_list = [{'id': user.id, 'username': user.username} for user in users]
+    return jsonify(user_list)
 
+@app.route('/api/posts', methods=['GET'])
+def get_posts():
+    posts = Post.query.all()
+    post_list = [{'id': post.id, 'title': post.title, 'content': post.content, 'user_id': post.user_id} for post in posts]
+    return jsonify(post_list)
+
+# Web interface routes
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/users')
+def user_page():
+    return render_template('users.html')
+
+@app.route('/posts')
+def post_page():
+    return render_template('posts.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)

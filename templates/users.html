@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users</title>
+</head>
+<body>
+    <h1>Users</h1>
+    <ul id="user-list"></ul>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Fetch and display users using Ajax
+            $.get('/api/users', function(users) {
+                users.forEach(function(user) {
+                    $('#user-list').append('<li>' + user.username + '</li>');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
